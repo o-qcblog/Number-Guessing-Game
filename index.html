@@ -1,89 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guess the Number Game</title>
-  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-    }
-    #output {
-      margin-top: 20px;
-      font-size: 1.1em;
-      white-space: pre-wrap;
-    }
-    button {
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .output {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Guess the Number Game</h1>
-    <p><b>Enter your guess in the format:</b> <code>&lt; 500</code>, <code>&gt; 600</code>, or <code>= 700</code></p>
-    <input id="text-input" type="text" placeholder="Enter your guess" />
-    <button id="submit-button">Submit</button>
-    <div id="output"></div>
-  </div>
+    <h1>Guess the Number Game!</h1>
+    <p>Enter your guess in the format: <code>&lt; 500</code>, <code>&gt; 600</code>, or <code>= 700</code></p>
+    <input type="text" id="guessInput" placeholder="Enter your guess">
+    <button id="submitButton">Submit</button>
+    <div class="output" id="output"></div>
 
-  <py-script>
-import random
-from js import document
+    <script>
+        const number = Math.floor(Math.random() * 10000) + 1;
+        let count = 0;
 
-# Generate a random number
-number = random.randint(1, 10000)
-count = 0
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const guessData = document.getElementById('guessInput').value.trim();
+            document.getElementById('guessInput').value = "";  // Clear input box
 
-# Callback function for button click
-def on_submit(event):
-    global count
-    text_input = document.getElementById("text-input")
-    output_div = document.getElementById("output")
+            if (!guessData) {
+                return;  // Ignore empty input
+            }
 
-    guess_data = text_input.value.strip()
-    text_input.value = ""  # Clear input box
+            const output = document.getElementById('output');
+            const question = guessData[0];
+            const guess = parseInt(guessData.slice(1).trim(), 10);
+            count += 1;
 
-    if not guess_data:
-        output_div.textContent = "⚠️ Please enter a valid input!"
-        return
+            if (isNaN(guess)) {
+                output.innerHTML += "<p>⚠️ Invalid format. Make sure your input follows the format <40, >50, or =60.</p>";
+                return;
+            }
 
-    try:
-        question = guess_data[0]
-        guess = int(guess_data[1:].strip())
-        count += 1
-
-        if question == "=":
-            if guess == number:
-                output_div.textContent = f"🎉 Well done! You guessed it right in {count} steps!"
-                document.getElementById("submit-button").disabled = True  # Disable button
-            else:
-                output_div.textContent = "❌ It was a wrong guess :("
-        elif question == ">":
-            if number >= guess:
-                output_div.textContent = f"✅ Yes! The number is greater than {guess}"
-            else:
-                output_div.textContent = f"❌ No! The number is not greater than {guess}"
-        elif question == "<":
-            if number <= guess:
-                output_div.textContent = f"✅ Yes! The number is lesser than {guess}"
-            else:
-                output_div.textContent = f"❌ No! The number is not lesser than {guess}"
-        else:
-            output_div.textContent = "⚠️ Invalid entry. Use <, >, or = followed by a number. Example: >40"
-    except ValueError:
-        output_div.textContent = "⚠️ Invalid format. Make sure your input follows the format <40, >50, or =60."
-
-# Bind the button click event to the function
-submit_button = document.getElementById("submit-button")
-submit_button.addEventListener("click", on_submit)
-  </py-script>
+            if (question === '=') {
+                if (guess === number) {
+                    output.innerHTML += `<p>🎉 Well done! You guessed it right in ${count} steps!</p>`;
+                    document.getElementById('submitButton').disabled = true;  // Disable further inputs
+                } else {
+                    output.innerHTML += "<p>❌ It was a wrong guess :(</p>";
+                }
+            } else if (question === '>') {
+                if (number >= guess) {
+                    output.innerHTML += `<p>✅ Yes! The number is greater than ${guess}</p>`;
+                } else {
+                    output.innerHTML += `<p>❌ No! The number is not greater than ${guess}</p>`;
+                }
+            } else if (question === '<') {
+                if (number <= guess) {
+                    output.innerHTML += `<p>✅ Yes! The number is lesser than ${guess}</p>`;
+                } else {
+                    output.innerHTML += `<p>❌ No! The number is not lesser than ${guess}</p>`;
+                }
+            } else {
+                output.innerHTML += "<p>⚠️ Invalid entry. Use <, >, or = followed by a number. Example: >40</p>";
+            }
+        });
+    </script>
 </body>
 </html>
